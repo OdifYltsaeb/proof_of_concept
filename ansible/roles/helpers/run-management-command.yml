@@ -1,0 +1,15 @@
+
+- name: "Run manage.py {{ command_params | mandatory }}"
+  command: >-
+            docker-compose
+            -f {{ compose_file  }}
+            run --rm
+            --entrypoint 'bash -c "python manage.py {{ command_params | mandatory }}"'
+            django
+  args:
+      chdir: "{{ code_dir }}"
+  register: result
+
+
+- debug:
+      var: result

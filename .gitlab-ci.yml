@@ -1,0 +1,94 @@
+# You can also use the fallback image from docker hub: thorgate/django-template-ci:latest
+image: registry.gitlab.com/thorgate-public/django-project-template/ci:latest
+
+services:
+  - docker:dind
+
+variables:
+  COMPOSE_DOCKER_CLI_BUILD: "1"
+  DOCKER_BUILDKIT: "1"
+  DOCKER_DRIVER: overlay2
+  DPT_VENV_CACHING: "1"
+  EDIT_SETTINGS: "no"
+  POSTGRES_PASSWORD: "spa_proof_of_concept"
+  POSTGRES_USER: "spa_proof_of_concept"
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+stages:
+  - test
+  - build
+
+test-django:
+  stage: test
+  coverage: '/^TOTAL.*\s+(\d+\%)$/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: "spa_proof_of_concept/coverage.xml"
+      junit: "spa_proof_of_concept/report.xml"
+  cache:
+    key: django-cache
+    paths:
+      - .data/pycache/pip
+      - .data/pycache/pypoetry
+    policy: pull-push
+  except:
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /tests skip/
+      - $CI_COMMIT_MESSAGE =~ /test skip/
+      - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+  script:
+    - make settings
+    - docker-compose build django
+    - make run-python cmd='entrypoint.sh -- echo "Installed dependencies"'
+    - make lint-py
+    - make coverage-py
+    - make patch-coverage-py-paths
+
+test-node:
+  stage: test
+  coverage: '/All\sfiles.*?\s+(\d+(?:.\d+)?)/'
+  cache:
+    key: ci-node-cache
+    paths:
+      - .data/node_modules
+      - .data/yarn
+    policy: pull-push
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: app/coverage/cobertura-coverage.xml
+      junit: app/coverage/junit.xml
+  except:
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /tests skip/
+      - $CI_COMMIT_MESSAGE =~ /test skip/
+      - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+  script:
+    - make settings
+    - docker-compose build node
+    - make node-install
+    - make lint-js
+    - make coverage-js
+    - make patch-coverage-js-paths
+
+
+build_compose_file:
+  stage: build
+  needs: []
+  except:
+    - template # Don't run CI on template branch, should not be required
+  script:
+    - make settings
+    # Ensure production images build also
+    - docker-compose -f docker-compose.production.yml build
+
+

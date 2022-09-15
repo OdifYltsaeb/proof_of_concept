@@ -1,0 +1,73 @@
+# Docker-compose configuration for production
+
+version: '3.8'
+
+x-common-spec: &common-spec
+  env_file: .env
+  restart: unless-stopped
+
+x-django-container-spec: &django-container-spec
+  <<: *common-spec
+  build:
+    context: .
+    dockerfile: Dockerfile-django.production
+  volumes:
+    - "/var/lib/docker-nginx/files/spa_proof_of_concept/assets:/files/assets"
+    - &django-media-volume "/var/lib/docker-nginx/files/spa_proof_of_concept/media:/files/media"
+    - &logs-volume "/var/log/spa_proof_of_concept:/var/log/spa_proof_of_concept"
+  networks:
+    - default
+    - nginx-network
+    - postgres-network
+  depends_on:
+    - redis
+  external_links:
+    - postgres-12:postgres
+
+services:
+  django:
+    <<: *django-container-spec
+    container_name: spa_proof_of_concept_django
+    # For some reason the command also has to be specified here, otherwise the entrypoint+command combination won't
+    #  work.
+    entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
+    command: gunicorn spa_proof_of_concept.wsgi:application --workers 2 --bind :80
+
+  node:
+    <<: *common-spec
+    build:
+      context: .
+      dockerfile: Dockerfile-node.production
+    container_name: spa_proof_of_concept_node
+    command: yarn start
+    volumes:
+      - "/var/lib/docker-nginx/files/spa_proof_of_concept/app/assets:/files/assets"
+      - *logs-volume
+    networks:
+      - default
+      - nginx-network
+
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    sysctls:
+      # To allow maintaining TCP backlog setting that defaults to 511
+      net.core.somaxconn: 512
+    volumes:
+      - "/var/lib/docker-spa_proof_of_concept/redis:/data"
+    networks:
+      - default
+
+# NB: These networks must be created by ansible and contain the global nginx/postgres containers.
+# Keep it in sync with ansible/roles/deploy/tasks/main.yml!
+networks:
+  default:
+    external:
+      name: spa_proof_of_concept_default
+  nginx-network:
+    external:
+      name: spa_proof_of_concept_nginx
+  postgres-network:
+    external:
+      name: spa_proof_of_concept_postgres

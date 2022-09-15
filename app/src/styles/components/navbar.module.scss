@@ -1,0 +1,30 @@
+.navbar {
+    @apply shadow-lg bg-neutral text-neutral-content p-0;
+   /* 'flex flex-row items-center border-b border-solid border-border shadow-lg' */
+    nav {
+        margin-left: 8rem;
+        @apply flex flex-row flex-grow pr-7 items-center;
+
+        > a {
+            @apply text-lg text-white uppercase font-bold pt-7 pr-4 pb-7 pl-4 relative leading-8;
+
+            &:after {
+                content: '';
+                @apply border-b-4 border-solid border-accent;
+                @apply w-0;
+                @apply absolute bottom-0 right-0 left-0;
+                @apply transition-all;
+            }
+
+            &.active {
+                &:after {
+                    @apply w-full;
+                }
+            }
+
+            &.last {
+                @apply pl-0 pr-0 ml-auto flex flex-row items-center;
+            }
+        }
+    }
+}

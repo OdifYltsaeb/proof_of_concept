@@ -1,0 +1,32 @@
+{
+    "cookiecutter": {
+        "*": "See variable reference: https://gitlab.com/thorgate-public/django-project-template/-/blob/master/README.md\n\t Press ENTER to continue.",
+        "_extensions": [
+            "cookiecutter_repo_extensions:Extension",
+            "tg_filters:TGFiltersModule",
+            "tg_dockerimage_lookup:TGDockerImageModule"
+        ],
+        "admin_email": "info@TODO.com",
+        "build_in_ci": "no",
+        "django_admin_path": "adminpanel",
+        "django_health_check_path": "_health",
+        "django_media_engine": "S3",
+        "docker_base_image": "debian",
+        "domain_name": "TODO.com",
+        "frontend_style": "spa",
+        "gitlab_repo_url": "",
+        "include_celery": "no",
+        "node_version": "16",
+        "postgres_version": "12",
+        "project_title": "spa-proof-of-concept",
+        "python_version": "3.9",
+        "repo_name": "spa_proof_of_concept",
+        "spa_django_host_prefix": "office",
+        "test_host": "test.TODO.com",
+        "thorgate": "no",
+        "use_auto_deploy": "no",
+        "use_cypress": "no",
+        "use_mypy": "yes",
+        "webapp_include_storybook": "no"
+    }
+}

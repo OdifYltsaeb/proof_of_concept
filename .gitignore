@@ -1,0 +1,36 @@
+.env
+.idea/
+# pyenv local python version
+.python-version
+
+*.mo
+*.pyo
+*.pyc
+.sass-cache/
+yarn-error.log
+node_modules/
+venv/
+.cache/
+
+.data*/
+
+spa_proof_of_concept/settings/local.py
+spa_proof_of_concept/settings/local_test.py
+spa_proof_of_concept/db.sqlite3
+spa_proof_of_concept/assets/
+
+spa_proof_of_concept/.cache
+spa_proof_of_concept/.pytest_cache
+spa_proof_of_concept/.coverage
+spa_proof_of_concept/coverage
+spa_proof_of_concept/coverage.xml
+spa_proof_of_concept/report.xml
+spa_proof_of_concept/htmlcov/
+spa_proof_of_concept/cover/
+# Node Project files
+app/build/
+app/cache/
+app/coverage/
+
+# Missing translations file
+**/locales/**/*.missing.json
