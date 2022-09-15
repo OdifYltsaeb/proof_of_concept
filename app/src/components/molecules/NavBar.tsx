@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import NavLink from '../atoms/navLink';
+import NavLink from '../atoms/NavLink';
 import UserComponent from "./UserComponent";
 
 import styles from '../../styles/components/navbar.module.scss';
@@ -14,6 +14,9 @@ const NavBar = function () {
                 </NavLink>
                 <NavLink activeClassName={styles.active} href="/protected">
                     <a>Protected page</a>
+                </NavLink>
+                <NavLink activeClassName={styles.active} href="/data">
+                    <a>Data page</a>
                 </NavLink>
                 <UserComponent />
             </nav>

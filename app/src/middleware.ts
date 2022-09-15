@@ -16,5 +16,5 @@ export function middleware(request: NextRequest) {
 };
 
 export const config = {
-  matcher: ['/protected:path*',],
+  matcher: ['/protected:path*', '/data:path*',],
 }

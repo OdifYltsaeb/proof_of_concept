@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import React from 'react';
+import {connect} from "react-redux";
 
 import { useRouter } from 'next/router';
-import SEO from '../components/atoms/seo';
+import SEO from '../components/atoms/SEO';
 import LoginForm from '../components/forms/LoginForm';
+import {setAuthenticatedUser} from "../stores/authentication";
 
-const LogIn = function () {
+
+const LogIn = function ({ setUserData }) {
     const { query } = useRouter();
 
     return (
@@ -14,7 +17,7 @@ const LogIn = function () {
             <div className="px-7 py-10 w-full">
                 <h1 className="text-xl">Welcome back!</h1>
                 <hr />
-                <LoginForm next={query.return} />
+                <LoginForm next={query.return} setUserData={setUserData} />
                 <ul>
                     <li>
                         Did you forget the password?&nbsp;
@@ -30,4 +33,10 @@ const LogIn = function () {
 
 LogIn.layout = 'auth';
 
-export default LogIn;
+const mapDispatchToProps = (dispatch) => ({
+    setUserData: (data) => dispatch(setAuthenticatedUser(data)),
+});
+
+const connectedLogin = connect(null, mapDispatchToProps)(LogIn)
+
+export default connectedLogin;

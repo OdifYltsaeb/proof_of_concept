@@ -1,6 +1,6 @@
 import React from 'react';
 
-import SEO from '../components/atoms/seo';
+import SEO from '../components/atoms/SEO';
 
 const Protected = function () {
     return (

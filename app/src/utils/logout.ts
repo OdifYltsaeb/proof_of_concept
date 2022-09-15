@@ -3,7 +3,7 @@ import Router from 'next/router';
 import { toast } from 'react-toastify';
 import axiosInstance from './axios';
 
-const logUserOut = () => {
+const logUserOut = (successCallback: () => void ) => {
     const toastId = 'logOutToast';
     toast('Please wait...', {
         position: 'top-right',
@@ -24,7 +24,7 @@ const logUserOut = () => {
                 type: 'success',
                 isLoading: false,
             });
-            // Cookies.set('authState', 'False', { sameSite: 'Strict', secure: true });
+            successCallback();
             Router.push('/login');
         })
         .catch(() => {
